@@ -12,16 +12,19 @@ typedef int (*builtin_cmd)(int argc, char **args);
 
 int cofsh_exit(int argc, char **args);
 int cofsh_cd(int argc, char **args);
+int cofsh_help(int argc, char **args);
 
 struct builtin_entry {
     char *cmd;
     builtin_cmd func;
+    char *help;
 };
 
 struct builtin_entry builtins[] = {
-    {"exit", cofsh_exit},
-    {"quit", cofsh_exit},
-    {"cd", cofsh_cd},
+    {"exit", cofsh_exit, "exit - exit shell"},
+    {"quit", cofsh_exit, "quit - exit shell"},
+    {"cd", cofsh_cd, "cd <dir> - change directory to <dir>"},
+    {"help", cofsh_help, "help - print help"},
 };
  
 int cofsh_exit(int argc, char **args) {
@@ -40,6 +43,17 @@ int cofsh_cd(int argc, char **args) {
     }
     return 1;
 }
+
+int cofsh_help(int argc, char **args) {
+
+    int num_builtins = sizeof(builtins) / sizeof(builtins[0]);
+    printf("\n== Coffee-Shell Builtin Commands ==\n");
+    for (int i = 0; i < num_builtins; i++) {
+        printf("%s\n", builtins[i].help);
+    }
+    printf("\n");
+}
+
 
 void startup_print() {
     char *startup_msg = 
