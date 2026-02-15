@@ -13,6 +13,7 @@ typedef int (*builtin_cmd)(int argc, char **args);
 int cofsh_exit(int argc, char **args);
 int cofsh_cd(int argc, char **args);
 int cofsh_help(int argc, char **args);
+int cofsh_brew(int argc, char **args);
 
 struct builtin_entry {
     char *cmd;
@@ -25,6 +26,7 @@ struct builtin_entry builtins[] = {
     {"quit", cofsh_exit, "quit - exit shell"},
     {"cd", cofsh_cd, "cd <dir> - change directory to <dir>"},
     {"help", cofsh_help, "help - print help"},
+    {"brew", cofsh_brew, "brew <n> - set a timer for <n> minutes"}
 };
  
 int cofsh_exit(int argc, char **args) {
@@ -52,6 +54,34 @@ int cofsh_help(int argc, char **args) {
         printf("%s\n", builtins[i].help);
     }
     printf("\n");
+    return 1;
+}
+
+int cofsh_brew(int argc, char **args) {
+    int timer = 20; //default value
+
+    if (argc > 1) {
+        int ret = atoi(args[1]);
+        if (ret) timer = ret;
+    }
+
+    char progress[10] = "..........";
+
+    for (int i = 0; i <= timer; i++) {
+
+        float ratio = (float)i / timer;
+        int bars = (int)(ratio * 10);
+
+        for (int j = 0; j < bars; j++) {
+            progress[j] = '|';
+        }
+
+        sleep(1);
+        printf("\r%s", progress);
+        fflush(stdout);
+    }
+    printf("Coffee is brewed!\n");
+    return 1;
 }
 
 
