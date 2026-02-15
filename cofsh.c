@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #define BUF_SIZE 64
 #define TOK_DELIM " \n"
@@ -9,6 +10,7 @@
 typedef int (*builtin_cmd)(int argc, char **args);
 
 int cofsh_exit(int argc, char **args);
+int cofsh_cd(int argc, char **args);
 
 struct builtin_entry {
     char *cmd;
@@ -17,12 +19,25 @@ struct builtin_entry {
 
 struct builtin_entry builtins[] = {
     {"exit", cofsh_exit},
-
+    {"quit", cofsh_exit},
+    {"cd", cofsh_cd},
 };
  
 int cofsh_exit(int argc, char **args) {
-    printf("EXIT CALL\n");
-    return 1; 
+    return 0; 
+}
+
+/* cd -> does nothing
+ * cd <arg> will cd into that dir
+ */
+int cofsh_cd(int argc, char **args) {
+    if (argc < 2) return 1;
+    else {
+        if (chdir(args[1]) != 0) {
+            return 0;
+        }
+    }
+    return 1;
 }
 
 void startup_print() {
@@ -57,9 +72,8 @@ int exec_args(int argc, char **args) {
     //first check for builtins
     int num_builtins = sizeof(builtins) / sizeof(builtins[0]);
     for (int i = 0; i < num_builtins; i++) {
-        printf("command: %s | builtin: %s\n", args[0], builtins[i].cmd);
         if (strcmp(args[0], builtins[i].cmd) == 0) {
-            return builtins[i].func(1, args);
+            return builtins[i].func(argc, args);
         }
     }    
 
@@ -67,21 +81,27 @@ int exec_args(int argc, char **args) {
 
 }
 
+#define PATH_MAX 32
+
 void cofsh_loop() {
     char *line = NULL;
     char **args = NULL;
     int *arg_count = NULL;
     size_t len = 0;
     int status = 1;
+    char dir[PATH_MAX];
 
     do {
+        if (getcwd(dir, sizeof(dir)) != NULL) {
+            printf("%s\n", dir);
+        }
+
         printf("> ");
 
         if (getline(&line, &len, stdin) == -1) {
             return;
         }
         int ret = parse_line(line, &args);
-        printf("ret: %d\n", ret);
         status = exec_args(ret, args);
         free(args);
 
