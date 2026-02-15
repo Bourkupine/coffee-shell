@@ -86,10 +86,10 @@ int exec_args(int argc, char **args) {
 
     switch(pid) {
     case -1:
-        perror("error fork");
+        perror("cofsh");
     case 0:
         if (execvp(args[0], args) == -1)
-            perror("child error");
+            perror("cofsh");
     default:
         do {
             wpid = waitpid(pid, &status, WUNTRACED);
