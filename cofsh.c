@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/wait.h>
 
 #define BUF_SIZE 64
 #define TOK_DELIM " \n"
@@ -78,7 +79,23 @@ int exec_args(int argc, char **args) {
     }    
 
     //otherwise execute
+    pid_t pid, wpid;
+    int status;
 
+    pid = fork();
+
+    switch(pid) {
+    case -1:
+        perror("error fork");
+    case 0:
+        if (execvp(args[0], args) == -1)
+            perror("child error");
+    default:
+        do {
+            wpid = waitpid(pid, &status, WUNTRACED);
+        } while (!WIFEXITED(status) && !WIFSIGNALED(status));
+    }
+    return 1;
 }
 
 #define PATH_MAX 32
