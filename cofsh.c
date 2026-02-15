@@ -102,6 +102,10 @@ void cofsh_loop() {
             return;
         }
         int ret = parse_line(line, &args);
+        if (ret < 1) {
+            free(args);
+            continue;
+        }
         status = exec_args(ret, args);
         free(args);
 
