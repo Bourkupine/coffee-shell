@@ -65,9 +65,11 @@ int cofsh_brew(int argc, char **args) {
         if (ret) timer = ret;
     }
 
-    char progress[10] = "..........";
+    char progress[11] = "..........";
 
-    for (int i = 0; i <= timer; i++) {
+    printf("preparing to brew...\n");
+
+    for (int i = 0; i < timer; i++) {
 
         float ratio = (float)i / timer;
         int bars = (int)(ratio * 10);
@@ -76,11 +78,14 @@ int cofsh_brew(int argc, char **args) {
             progress[j] = '|';
         }
 
-        sleep(1);
         printf("\r%s", progress);
         fflush(stdout);
+        sleep(60);
     }
-    printf("Coffee is brewed!\n");
+    printf("\r%s", "||||||||||");
+    fflush(stdout);
+    sleep(1);
+    printf("\n\nCoffee is brewed!\n");
     return 1;
 }
 
