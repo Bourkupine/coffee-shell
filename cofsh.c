@@ -5,15 +5,14 @@
 #include <sys/wait.h>
 
 #include "builtin.h"
+#include "coffee_ascii.h"
 
 #define BUF_SIZE 64
 #define TOK_DELIM " \n"
 
 
 void startup_print() {
-    char *startup_msg = 
-        "☕\n";
-    printf("%s\n", startup_msg);
+    printf("%s\n", cofsh_banner);
 }
 
 int parse_line(char *line, char ***args) {
